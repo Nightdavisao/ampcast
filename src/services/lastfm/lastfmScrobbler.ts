@@ -26,7 +26,7 @@ export function scrobble(): void {
             filter(exists),
             debounceTime(10_000),
             filter((item) => canScrobble(item)),
-            mergeMap((item) => lastfmApi.updateNowPlaying(item))
+            mergeMap((item) => lastfmApi.updateNowPlaying(stripAppleMusicSuffixes(item)))
         )
         .subscribe(logger);
 
@@ -70,13 +70,36 @@ export function scrobble(): void {
             if (unscrobbled.length > 0) {
                 unscrobbled.reverse();
                 unscrobbled.length = Math.min(unscrobbled.length, maxScrobbles);
-                await lastfmApi.scrobble(unscrobbled);
+
+                const toScrobble = unscrobbled.map(stripAppleMusicSuffixes);
+                await lastfmApi.scrobble(toScrobble as Listen[]);
                 const lastfmScrobbledAt = Math.floor(Date.now() / 1000);
                 await updateListens(unscrobbled.map((item) => ({...item, lastfmScrobbledAt})));
             }
         } catch (err) {
             logger.error(err);
         }
+    }
+
+    function stripAppleMusicSuffixes(listen: MediaItem | Listen): MediaItem | Listen {
+        const service = getServiceFromSrc(listen);
+
+        const strip = (title: string): string => {
+            return title
+            .replace(/\s*[([]\s*(?:deluxe edition|special edition|anniversary edition|limited edition|bonus tracks|expanded edition|remastered|live|album version)(?:\s?([0-9]+))?\s*[)\]]/gi, "")
+            .replace(/- ep$/gi, "")
+            .replace(/- single$/gi, "")
+            .trim()
+        }
+
+        if (service?.id === 'apple') {
+            return {
+                ...listen,
+                album: listen.album ? strip(listen.album) : listen.album,
+                title: strip(listen.title),
+            };
+        }
+        return listen;
     }
 
     function canScrobble(item: MediaItem): boolean {
