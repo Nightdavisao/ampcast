@@ -92,7 +92,7 @@ export default function Icon({name, className = ''}: IconProps) {
     switch (name) {
         case 'ampcast':
             return (
-                <image className={className} href="/futa-32.png" width="100%" height="100%" />
+                <img className={className} src="/futa-32.png" width="100%" height="100%" />
             );
 
         case 'localdb':
