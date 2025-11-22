@@ -92,10 +92,7 @@ export default function Icon({name, className = ''}: IconProps) {
     switch (name) {
         case 'ampcast':
             return (
-                <svg className={className} viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="8" strokeWidth="4" stroke="orange" fill="black" />
-                    <circle cx="12" cy="12" r="2" stroke="none" fill="white" />
-                </svg>
+                <image className={className} href="/futa-32.png" width="100%" height="100%" />
             );
 
         case 'localdb':
