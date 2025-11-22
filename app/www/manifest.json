@@ -1,23 +1,23 @@
 {
-    "name": "ampcast",
-    "short_name": "ampcast",
+    "name": "futacast",
+    "short_name": "futacast",
     "start_url": "/",
     "display_override": [
         "window-controls-overlay",
         "minimal-ui"
     ],
     "display": "standalone",
-    "description": "Ampcast music player",
+    "description": "Futacast music player (fork of ampcast)",
     "background_color": "#32312f",
     "theme_color": "#32312f",
     "icons": [
         {
-            "src": "icon-192.png",
+            "src": "futa-192.png",
             "type": "image/png",
             "sizes": "192x192"
         },
         {
-            "src": "icon-512.png",
+            "src": "futa-512.png",
             "type": "image/png",
             "sizes": "512x512"
         }
