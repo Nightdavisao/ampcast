@@ -46,8 +46,8 @@ export default function AppSettingsGeneral() {
                         I am not affiliated with the original developer in any way.
                         <br></br>
                         This is only supposed to be used only by certain individuals (like me!),
-                        so if you're reading this and you have no idea what I'm talking about, please
-                        don't use this software. It'll explode your computer or something.
+                        so if you&rsquo;re reading this and you have no idea what I&rsquo;m talking about, please
+                        don&rsquo;t use this software. It&rsquo;ll explode your computer or something.
                     </p>
                 </div>
                 <legend>Version</legend>
