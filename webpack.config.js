@@ -6,11 +6,20 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const packageJson = require('./package.json');
 const {rimrafSync} = require('rimraf');
+const {execSync} = require('child_process');
 
 module.exports = (args) => {
     const {mode = 'production', target = 'pwa'} = args;
     const __dev__ = mode === 'development';
     const wwwDir = resolve(__dirname, __dev__ ? 'www-dev' : 'app/www');
+
+    // Get git commit hash
+    let gitCommitHash = '';
+    try {
+        gitCommitHash = execSync('git rev-parse --short HEAD').toString().trim();
+    } catch (e) {
+        console.warn('Could not get git commit hash:', e.message);
+    }
 
     // .env
     const hasServerEnv = __dev__ || target === 'docker';
@@ -168,7 +177,7 @@ module.exports = (args) => {
                 __dev__,
                 __target__: JSON.stringify(target),
                 __app_name__: JSON.stringify(packageJson.name || ''),
-                __app_version__: JSON.stringify(packageJson.version || ''),
+                __app_version__: JSON.stringify(gitCommitHash || ''),
                 __app_contact__: JSON.stringify(packageJson.author.email || ''),
                 __am_dev_token__: getEnv('APPLE_MUSIC_DEV_TOKEN'),
                 __lf_api_key__: getEnv('LASTFM_API_KEY'),

@@ -38,10 +38,22 @@ export default function AppSettingsGeneral() {
     return (
         <form className="app-settings-general" method="dialog" onSubmit={handleSubmit}>
             <fieldset>
-                <legend>About</legend>
+                <legend>Disclaimer</legend>
                 <div className="table-layout">
                     <p>
-                        <label htmlFor={`${id}-version`}>Version:</label>
+                        This is a fork of ampcast, a music player created by rekkyrosso.
+                        <br></br>
+                        I am not affiliated with the original developer in any way.
+                        <br></br>
+                        This is only supposed to be used only by certain individuals (like me!),
+                        so if you're reading this and you have no idea what I'm talking about, please
+                        don't use this software. It'll explode your computer or something.
+                    </p>
+                </div>
+                <legend>Version</legend>
+                <div className="table-layout">
+                    <p>
+                        <label htmlFor={`${id}-version`}>Commit hash:</label>
                         <output id={`${id}-version`}>{__app_version__}</output>
                     </p>
                 </div>
