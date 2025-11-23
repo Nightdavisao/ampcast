@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo} from 'react';
-import {downloadUrl, forkRepoUrl} from 'services/constants';
+import {forkRepoUrl} from 'services/constants';
 import {alert} from 'components/Dialog';
 import ExternalLink from 'components/ExternalLink';
 
