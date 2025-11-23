@@ -17,9 +17,13 @@ export interface MusicKitPage extends Page<MusicKitItem> {
 export default class MusicKitPager<T extends MediaObject> extends SequentialPager<T> {
     private nextPageUrl: string | undefined = undefined;
 
-    static toPage(response: any): MusicKitPage {
-        const result = response.data[0]?.relationships?.tracks || response;
-        const items = result.data || [];
+    static toPage(response: any, type?: string): MusicKitPage {
+        const result = Array.isArray(response.data) ? response?.data[0]?.relationships?.tracks || response : response;
+        const items = type && typeof result.results === 'object'
+            && Object.prototype.hasOwnProperty.call(result.results, type)
+            ? result?.results[type]?.data
+            : result.data || [];
+
         const nextPageUrl = result.next;
         const total = result.meta?.total;
         return {items, total, nextPageUrl};
@@ -39,7 +43,7 @@ export default class MusicKitPager<T extends MediaObject> extends SequentialPage
                         this.nextPageUrl || href,
                         limit ? (params ? {...params, limit} : {limit}) : params
                     );
-                    const result = toPage(response.data);
+                    const result = toPage(response.data, options?.type);
                     const items = createMediaObjects(result.items, parent);
                     const total = result.total;
                     const atEnd = !result.nextPageUrl;

@@ -1,4 +1,4 @@
-import {Except} from 'type-fest';
+import { Except } from 'type-fest';
 import FilterType from 'types/FilterType';
 import ItemType from 'types/ItemType';
 import LinearType from 'types/LinearType';
@@ -11,15 +11,15 @@ import MediaListSort from 'types/MediaListSort';
 import MediaObject from 'types/MediaObject';
 import MediaPlaylist from 'types/MediaPlaylist';
 import MediaServiceId from 'types/MediaServiceId';
-import MediaSource, {AnyMediaSource, MediaMultiSource} from 'types/MediaSource';
+import MediaSource, { AnyMediaSource, MediaMultiSource } from 'types/MediaSource';
 import MediaType from 'types/MediaType';
-import Pager, {PagerConfig} from 'types/Pager';
-import {exists} from 'utils';
-import {NoFavoritesPlaylistError} from 'services/errors';
+import Pager, { PagerConfig } from 'types/Pager';
+import { exists } from 'utils';
+import { NoFavoritesPlaylistError } from 'services/errors';
 import SimplePager from 'services/pagers/SimplePager';
-import {t} from 'services/i18n';
-import {songChartsLayout} from 'components/MediaList/layouts';
-import MusicKitPager, {MusicKitPage} from './MusicKitPager';
+import { t } from 'services/i18n';
+import { songChartsLayout } from 'components/MediaList/layouts';
+import MusicKitPager, { MusicKitPage } from './MusicKitPager';
 import MusicKitRecentlyPlayedPager from './MusicKitRecentlyPlayedPager';
 import appleSettings from './appleSettings';
 
@@ -69,13 +69,13 @@ export const appleSearch: MediaMultiSource = {
         }),
         createSearch<MediaItem>(
             ItemType.Media,
-            {id: 'radio', title: 'Radio', primaryItems: {layout: radioLayout}},
-            {types: 'stations'}
+            { id: 'radio', title: 'Radio', primaryItems: { layout: radioLayout } },
+            { types: 'stations' }
         ),
         createSearch<MediaItem>(
             ItemType.Media,
-            {id: 'videos', title: 'Videos', mediaType: MediaType.Video},
-            {types: 'music-videos'}
+            { id: 'videos', title: 'Videos', mediaType: MediaType.Video },
+            { types: 'music-videos' }
         ),
     ],
 };
@@ -96,7 +96,7 @@ const appleRecommendations: MediaMultiSource = {
         createRecommendations<MediaItem>('stations', ItemType.Media, {
             id: 'radio',
             title: 'Radio',
-            primaryItems: {label: 'Radios', layout: radioLayout},
+            primaryItems: { label: 'Radios', layout: radioLayout },
         }),
     ],
 };
@@ -119,13 +119,23 @@ const appleLibrarySongs: MediaSource<MediaItem> = {
     itemType: ItemType.Media,
     lockActionsStore: true,
     defaultHidden: true,
+    searchable: true,
     primaryItems: {sort: appleLibrarySort},
 
-    search(_, {sortBy, sortOrder} = appleLibrarySort.defaultSort): Pager<MediaItem> {
-        return new MusicKitPager('/v1/me/library/songs', {
-            'include[library-songs]': 'catalog',
-            sort: `${sortOrder === -1 ? '-' : ''}${sortBy}`,
-        });
+    search({ q }: { q?: string } = {}, { sortBy, sortOrder } = appleLibrarySort.defaultSort): Pager<MediaItem> {
+        if (!q) {
+            return new MusicKitPager('/v1/me/library/songs', {
+                'include[library-songs]': 'catalog',
+                sort: `${sortOrder === -1 ? '-' : ''}${sortBy}`,
+            });
+        } else {
+            return new MusicKitPager('/v1/me/library/search', {
+                term: q,
+                'types': 'library-songs',
+                'include[library-songs]': 'catalog',
+                sort: `${sortOrder === -1 ? '-' : ''}${sortBy}`,
+            }, {pageSize: 25, type: 'library-songs'});
+        }
     },
 };
 
@@ -133,16 +143,27 @@ const appleLibraryAlbums: MediaSource<MediaAlbum> = {
     id: `${serviceId}/library-albums`,
     title: 'My Albums',
     icon: 'tick',
+    searchable: true,
     itemType: ItemType.Album,
     lockActionsStore: true,
-    primaryItems: {sort: appleLibrarySort},
+    primaryItems: { sort: appleLibrarySort },
 
-    search(_, {sortBy, sortOrder} = appleLibrarySort.defaultSort): Pager<MediaAlbum> {
-        return new MusicKitPager('/v1/me/library/albums', {
-            'fields[library-albums]': 'name,artistName,playParams,artwork',
-            'include[library-albums]': 'catalog',
-            sort: `${sortOrder === -1 ? '-' : ''}${sortBy}`,
-        });
+    search({ q }: { q?: string } = {}, { sortBy, sortOrder } = appleLibrarySort.defaultSort): Pager<MediaAlbum> {
+        if (!q) {
+            return new MusicKitPager('/v1/me/library/albums', {
+                'fields[library-albums]': 'name,artistName,playParams,artwork',
+                'include[library-albums]': 'catalog',
+                sort: `${sortOrder === -1 ? '-' : ''}${sortBy}`,
+            });
+        } else {
+            return new MusicKitPager('/v1/me/library/search', {
+                term: q,
+                'types': 'library-albums',
+                'fields[library-albums]': 'name,artistName,playParams,artwork',
+                'include[library-albums]': 'catalog',
+                sort: `${sortOrder === -1 ? '-' : ''}${sortBy}`,
+            }, {pageSize: 25, type: 'library-albums'});
+        }
     },
 };
 
@@ -153,13 +174,24 @@ const appleLibraryArtists: MediaSource<MediaArtist> = {
     itemType: ItemType.Artist,
     lockActionsStore: true,
     defaultHidden: true,
+    searchable: true,
 
-    search(): Pager<MediaArtist> {
-        return new MusicKitPager('/v1/me/library/artists', {
-            'fields[library-artists]': 'name,playParams,artwork',
-            'include[library-artists]': 'catalog',
-            'omit[resource:artists]': 'relationships',
-        });
+    search({ q }: { q?: string } = {}): Pager<MediaArtist> {
+        if (!q) {
+            return new MusicKitPager('/v1/me/library/artists', {
+                'fields[library-artists]': 'name,playParams,artwork',
+                'include[library-artists]': 'catalog',
+                'omit[resource:artists]': 'relationships',
+            });
+        } else {
+            return new MusicKitPager('/v1/me/library/search', {
+                term: q,
+                'types': 'library-artists',
+                'fields[library-artists]': 'name,playParams,artwork',
+                'include[library-artists]': 'catalog',
+                'omit[resource:library-artists]': 'relationships',
+            }, {pageSize: 25, type: 'library-artists'});
+        }
     },
 };
 
@@ -169,9 +201,9 @@ const appleLibraryPlaylists: MediaSource<MediaPlaylist> = {
     icon: 'tick',
     itemType: ItemType.Playlist,
     lockActionsStore: true,
-    primaryItems: {sort: appleLibrarySort},
+    primaryItems: { sort: appleLibrarySort },
 
-    search(_, {sortBy, sortOrder} = appleLibrarySort.defaultSort): Pager<MediaPlaylist> {
+    search(_, { sortBy, sortOrder } = appleLibrarySort.defaultSort): Pager<MediaPlaylist> {
         return new MusicKitPager('/v1/me/library/playlists', {
             'fields[library-playlists]': 'name,playParams,artwork',
             'include[library-playlists]': 'catalog',
@@ -208,7 +240,7 @@ const appleLibraryVideos: MediaSource<MediaItem> = {
         sort: appleLibrarySort,
     },
 
-    search(_, {sortBy, sortOrder} = appleLibrarySort.defaultSort): Pager<MediaItem> {
+    search(_, { sortBy, sortOrder } = appleLibrarySort.defaultSort): Pager<MediaItem> {
         return new MusicKitPager('/v1/me/library/music-videos', {
             'include[library-music-videos]': 'catalog',
             sort: `${sortOrder === -1 ? '-' : ''}${sortBy}`,
@@ -232,7 +264,7 @@ const appleFavoriteSongs: MediaSource<MediaItem> = {
         }
         return new MusicKitPager(
             `/v1/me/library/playlists/${playlistId}/tracks`,
-            {'include[library-songs]': 'catalog'},
+            { 'include[library-songs]': 'catalog' },
             undefined,
             {
                 src: `apple:library-playlists:${playlistId}`,
@@ -248,19 +280,19 @@ const appleSongCharts: MediaSource<MediaItem> = {
     icon: 'chart',
     itemType: ItemType.Media,
     filterType: FilterType.ByGenre,
-    primaryItems: {layout: songChartsLayout},
+    primaryItems: { layout: songChartsLayout },
 
     search(genre?: MediaFilter): Pager<MediaItem> {
         if (genre) {
             return new MusicKitPager(
                 '/v1/catalog/{{storefrontId}}/charts',
-                {types: 'songs', genre: genre.id},
-                {maxSize: 200, pageSize: 50},
+                { types: 'songs', genre: genre.id },
+                { maxSize: 200, pageSize: 50 },
                 undefined,
                 (response: any): MusicKitPage => {
-                    const result = response.results?.songs?.[0] || {data: []};
+                    const result = response.results?.songs?.[0] || { data: [] };
                     const nextPageUrl = result.next;
-                    return {items: result.data, nextPageUrl};
+                    return { items: result.data, nextPageUrl };
                 }
             );
         } else {
@@ -292,13 +324,13 @@ const appleAlbumCharts: MediaSource<MediaAlbum> = {
         if (genre) {
             return new MusicKitPager(
                 '/v1/catalog/{{storefrontId}}/charts',
-                {types: 'albums', genre: genre.id},
-                {maxSize: 200, pageSize: 50},
+                { types: 'albums', genre: genre.id },
+                { maxSize: 200, pageSize: 50 },
                 undefined,
                 (response: any): MusicKitPage => {
-                    const result = response.results?.albums?.[0] || {data: []};
+                    const result = response.results?.albums?.[0] || { data: [] };
                     const nextPageUrl = result.next;
-                    return {items: result.data, nextPageUrl};
+                    return { items: result.data, nextPageUrl };
                 }
             );
         } else {
@@ -330,13 +362,13 @@ const applePlaylistCharts: MediaSource<MediaPlaylist> = {
     search(): Pager<MediaPlaylist> {
         return new MusicKitPager(
             '/v1/catalog/{{storefrontId}}/charts',
-            {types: 'playlists'},
-            {maxSize: 200, pageSize: 50},
+            { types: 'playlists' },
+            { maxSize: 200, pageSize: 50 },
             undefined,
             (response: any): MusicKitPage => {
-                const result = response.results?.playlists?.[0] || {data: []};
+                const result = response.results?.playlists?.[0] || { data: [] };
                 const nextPageUrl = result.next;
-                return {items: result.data, nextPageUrl};
+                return { items: result.data, nextPageUrl };
             }
         );
     },
@@ -359,13 +391,13 @@ const appleMusicVideoCharts: MediaSource<MediaItem> = {
         if (genre) {
             return new MusicKitPager(
                 '/v1/catalog/{{storefrontId}}/charts',
-                {types: 'music-videos', genre: genre.id},
-                {maxSize: 200, pageSize: 50},
+                { types: 'music-videos', genre: genre.id },
+                { maxSize: 200, pageSize: 50 },
                 undefined,
                 (response: any): MusicKitPage => {
-                    const result = response.results?.['music-videos']?.[0] || {data: []};
+                    const result = response.results?.['music-videos']?.[0] || { data: [] };
                     const nextPageUrl = result.next;
-                    return {items: result.data, nextPageUrl};
+                    return { items: result.data, nextPageUrl };
                 }
             );
         } else {
@@ -389,13 +421,13 @@ const appleGlobalCharts: MediaSource<MediaPlaylist> = {
     search(): Pager<MediaPlaylist> {
         return new MusicKitPager(
             '/v1/catalog/{{storefrontId}}/charts',
-            {chartId: 'daily-global-top', with: 'dailyGlobalTopCharts'},
-            {pageSize: 50},
+            { chartId: 'daily-global-top', with: 'dailyGlobalTopCharts' },
+            { pageSize: 50 },
             undefined,
             (response: any): MusicKitPage => {
-                const result = response.results?.dailyGlobalTopCharts?.[0] || {data: []};
+                const result = response.results?.dailyGlobalTopCharts?.[0] || { data: [] };
                 const nextPageUrl = result.next;
-                return {items: result.data, nextPageUrl};
+                return { items: result.data, nextPageUrl };
             }
         );
     },
@@ -417,13 +449,13 @@ const appleCityCharts: MediaSource<MediaPlaylist> = {
     search(): Pager<MediaPlaylist> {
         return new MusicKitPager(
             '/v1/catalog/{{storefrontId}}/charts',
-            {chartId: 'city-top', with: 'cityCharts'},
-            {pageSize: 50},
+            { chartId: 'city-top', with: 'cityCharts' },
+            { pageSize: 50 },
             undefined,
             (response: any): MusicKitPage => {
-                const result = response.results?.cityCharts?.[0] || {data: []};
+                const result = response.results?.cityCharts?.[0] || { data: [] };
                 const nextPageUrl = result.next;
-                return {items: result.data, nextPageUrl};
+                return { items: result.data, nextPageUrl };
             }
         );
     },
@@ -446,7 +478,7 @@ const appleRadio: MediaSource<MediaItem> = {
             return new MusicKitPager(
                 `/v1/catalog/{{storefrontId}}/station-genres/${genre.id}/stations`,
                 undefined,
-                {pageSize: 50}
+                { pageSize: 50 }
             );
         } else {
             return new SimplePager();
@@ -493,9 +525,9 @@ function createRecommendations<T extends MediaObject>(
                     'format[resources]': 'map',
                     'omit[resource]': 'autos',
                 },
-                {pageSize: 30},
+                { pageSize: 30 },
                 undefined,
-                ({data = [], resources = {}}: any): MusicKitPage => {
+                ({ data = [], resources = {} }: any): MusicKitPage => {
                     const items = data
                         .map((data: any) => resources['personal-recommendation'][data.id])
                         .filter(exists)
@@ -508,7 +540,7 @@ function createRecommendations<T extends MediaObject>(
                         .map((data: any) => resources[type][data.id])
                         .filter(exists);
                     const total = items.length;
-                    return {items, total, atEnd: true};
+                    return { items, total, atEnd: true };
                 }
             );
         },
@@ -527,7 +559,7 @@ function createSearch<T extends MediaObject>(
         id: `${serviceId}/search/${props.id}`,
         icon: 'search',
 
-        search({q = ''}: {q?: string} = {}): Pager<T> {
+        search({ q = '' }: { q?: string } = {}): Pager<T> {
             return createSearchPager(itemType, q, filters, options);
         },
     };
@@ -540,7 +572,7 @@ function createSearchPager<T extends MediaObject>(
     options?: Partial<PagerConfig<T>>
 ): Pager<T> {
     if (q) {
-        const params: MusicKit.QueryParameters = {...filters, term: q};
+        const params: MusicKit.QueryParameters = { ...filters, term: q };
         if (!params.types) {
             switch (itemType) {
                 case ItemType.Media:
@@ -565,13 +597,13 @@ function createSearchPager<T extends MediaObject>(
         return new MusicKitPager(
             '/v1/catalog/{{storefrontId}}/search',
             params,
-            {maxSize: 250, pageSize: 25, ...options},
+            { maxSize: 250, pageSize: 25, ...options },
             undefined,
             (response: any): MusicKitPage => {
-                const result = response.results[type] || {data: []};
+                const result = response.results[type] || { data: [] };
                 const nextPageUrl = result.next;
                 const total = response.meta?.total;
-                return {items: result.data, total, nextPageUrl};
+                return { items: result.data, total, nextPageUrl };
             }
         );
     } else {

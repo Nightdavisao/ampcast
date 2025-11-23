@@ -17,6 +17,7 @@ export default interface Pager<T> {
 }
 
 export interface PagerConfig<T = any> {
+    readonly type?: string;
     readonly pageSize: number;
     readonly maxSize?: number;
     readonly itemKey?: ConditionalKeys<T, string | number>;
