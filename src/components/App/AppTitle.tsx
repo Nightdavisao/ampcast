@@ -9,7 +9,7 @@ export default memo(function AppTitle() {
                 <Icon className="app-icon" name="ampcast" />
                 <span className="app-text">{__app_name__}</span>
             </span>{' '}
-            <span className="app-version">{__app_version__}</span>
+            <span className="app-version">{__app_commit_hash__}</span>
         </h1>
     );
 });

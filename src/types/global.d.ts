@@ -1,5 +1,6 @@
 declare const __app_name__: string;
 declare const __app_version__: string;
+declare const __app_commit_hash__: string;
 declare const __app_contact__: string;
 
 declare const __dev__: boolean;

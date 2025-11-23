@@ -56,6 +56,10 @@ export default function AppSettingsGeneral() {
                 <div className="table-layout">
                     <p>
                         <label htmlFor={`${id}-version`}>Commit hash:</label>
+                        <output id={`${id}-version`}>{__app_commit_hash__}</output>
+                    </p>
+                    <p>
+                        <label htmlFor={`${id}-version`}>Base version:</label>
                         <output id={`${id}-version`}>{__app_version__}</output>
                     </p>
                 </div>
