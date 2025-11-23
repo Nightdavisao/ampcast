@@ -50,6 +50,8 @@ export default function AppSettingsGeneral() {
                         don&rsquo;t use this software. It&rsquo;ll explode your computer or something.
                     </p>
                 </div>
+            </fieldset>
+            <fieldset>
                 <legend>Version</legend>
                 <div className="table-layout">
                     <p>
