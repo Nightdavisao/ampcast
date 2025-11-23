@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo} from 'react';
-import {downloadUrl} from 'services/constants';
+import {downloadUrl, forkRepoUrl} from 'services/constants';
 import {alert} from 'components/Dialog';
 import ExternalLink from 'components/ExternalLink';
 
@@ -17,14 +17,23 @@ export default function useAppUpdated(): void {
                     title: 'App updated',
                     message: (
                         <>
-                            <p>Ampcast has been updated to version {__app_version__}.</p>
+                            <p>futacast (fork of ampcast) has been updated to commit {__app_commit_hash__}.</p>
                             <p>
                                 <ExternalLink
                                     style={{textDecoration: 'underline'}}
-                                    href={`${downloadUrl}/tag/v${__app_version__}`}
+                                    href={`${forkRepoUrl}/commit/${__app_commit_hash__}`}
                                 >
-                                    Release notes on GitHub
+                                    View commit
                                 </ExternalLink>
+                                {' · '}
+                                {currentVersion && (
+                                    <ExternalLink
+                                        style={{textDecoration: 'underline'}}
+                                        href={`${forkRepoUrl}/compare/${currentVersion}...${__app_commit_hash__}`}
+                                    >
+                                        Changes since {currentVersion}
+                                    </ExternalLink>
+                                )}
                             </p>
                         </>
                     ),

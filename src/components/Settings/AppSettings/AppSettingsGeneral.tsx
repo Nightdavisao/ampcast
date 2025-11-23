@@ -1,5 +1,5 @@
 import React, {useCallback, useId, useRef} from 'react';
-import {downloadUrl, supportUrl} from 'services/constants';
+import {downloadUrl, githubRepoUrl, supportUrl} from 'services/constants';
 import ampcastElectron from 'services/ampcastElectron';
 import {confirm} from 'components/Dialog';
 import DialogButtons from 'components/Dialog/DialogButtons';
@@ -40,11 +40,11 @@ export default function AppSettingsGeneral() {
             <fieldset>
                 <legend>Disclaimer</legend>
                 <div className="table-layout">
-                    <p>
+                    <p style={{ lineHeight: 1.2 }}>
                         This is a fork of ampcast, a music player created by rekkyrosso.
-                        <br></br>
+                        <br />
                         I am not affiliated with the original developer in any way.
-                        <br></br>
+                        <br />
                         This is only supposed to be used only by certain individuals (like me!),
                         so if you&rsquo;re reading this and you have no idea what I&rsquo;m talking about, please
                         don&rsquo;t use this software. It&rsquo;ll explode your computer or something.
@@ -90,18 +90,12 @@ export default function AppSettingsGeneral() {
                 </fieldset>
             ) : (
                 <fieldset>
-                    <legend>Download</legend>
+                    <legend>Official project</legend>
                     <p>
-                        <ExternalLink href={downloadUrl} />
+                        <ExternalLink href={githubRepoUrl} />
                     </p>
                 </fieldset>
             )}
-            <fieldset>
-                <legend>Support</legend>
-                <p>
-                    <ExternalLink href={supportUrl} />
-                </p>
-            </fieldset>
             <DialogButtons />
         </form>
     );

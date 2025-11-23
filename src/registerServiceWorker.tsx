@@ -23,7 +23,7 @@ if (location.protocol === 'https:' && navigator.serviceWorker) {
                     title: 'Update Available',
                     message: (
                         <>
-                            <p>A new version of Ampcast is available.</p>
+                            <p>A new version of futacast (fork of ampcast) is available.</p>
                             <p>Install update?</p>
                         </>
                     ),
