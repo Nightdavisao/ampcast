@@ -1,5 +1,5 @@
 import React, {useCallback, useId, useRef} from 'react';
-import {downloadUrl, githubRepoUrl, supportUrl} from 'services/constants';
+import {downloadUrl, githubRepoUrl} from 'services/constants';
 import ampcastElectron from 'services/ampcastElectron';
 import {confirm} from 'components/Dialog';
 import DialogButtons from 'components/Dialog/DialogButtons';
