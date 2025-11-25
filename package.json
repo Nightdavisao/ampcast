@@ -1,7 +1,7 @@
 {
     "name": "futacast",
-    "version": "0.9.22",
-    "description": "Futacast music player (fork of ampcast)",
+    "version": "0.9.23",
+    "description": "Futacast (fork of ampcast) music player",
     "homepage": "https://ampcast.app",
     "author": {
         "name": "rekkyrosso",

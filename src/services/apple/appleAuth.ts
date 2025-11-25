@@ -130,24 +130,21 @@ async function setFavoriteSongsId(musicKit: MusicKit.MusicKitInstance) {
 
 async function getFavoriteSongsId(
     musicKit: MusicKit.MusicKitInstance,
-    url: string,
-    offset: number = 0
+    url: string
 ): Promise<string> {
-    const limit = 100;
     const {
         data: { data: playlists = [], next },
     } = await musicKit.api.music(url, {
         'extend[library-playlists]': 'tags',
         'fields[library-playlists]': 'tags',
-        limit,
-        offset,
+        limit: 100
     });
 
     const favoriteSongs = playlists.find((playlist: any) =>
         playlist.attributes?.tags?.includes('favorited')
     );
 
-    return favoriteSongs?.id ?? (next ? getFavoriteSongsId(musicKit, url, offset + limit) : '');
+    return favoriteSongs?.id ?? (next ? getFavoriteSongsId(musicKit, url) : '');
 }
 
 observeIsLoggedIn()
