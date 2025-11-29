@@ -181,6 +181,7 @@ module.exports = (args) => {
                 __app_commit_hash__: JSON.stringify(gitCommitHash),
                 __app_contact__: JSON.stringify(packageJson.author.email || ''),
                 __am_dev_token__: getEnv('APPLE_MUSIC_DEV_TOKEN'),
+                __ib_client_id__: getEnv('IBROADCAST_CLIENT_ID'),
                 __lf_api_key__: getEnv('LASTFM_API_KEY'),
                 __lf_api_secret__: getEnv('LASTFM_API_SECRET'),
                 __sp_client_id__: getEnv('SPOTIFY_CLIENT_ID'),
